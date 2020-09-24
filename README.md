@@ -1,0 +1,1 @@
+# CodinGame Contest TypeScript Starter

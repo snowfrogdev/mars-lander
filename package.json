@@ -1,0 +1,31 @@
+{
+  "name": "mars-lander",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/Main.js",
+  "scripts": {
+    "start": "parcel ./src/Main.ts",
+    "test": "jest",
+    "build": "webpack"
+  },
+  "keywords": [],
+  "author": "Philippe Vaillancourt <phil@snowfrog.dev> (https://snowfrog.dev)",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.2",
+    "@typescript-eslint/eslint-plugin": "^4.2.0",
+    "@typescript-eslint/parser": "^4.2.0",
+    "clean-webpack-plugin": "^3.0.0",
+    "eslint": "^7.9.0",
+    "jest": "^26.4.2",
+    "ts-jest": "^26.4.0",
+    "ts-loader": "^8.0.4",
+    "ts-mockery": "^1.2.0",
+    "ts-node": "^9.0.0",
+    "tslib": "^2.0.1",
+    "typescript": "^4.0.3",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12"
+  }
+}
