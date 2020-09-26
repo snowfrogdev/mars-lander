@@ -37,4 +37,8 @@ export class Mars {
   isMovingOutOfBounds(segment: LineSegment): boolean {
     return this._bounds.some((bound) => bound.intersects(segment));
   }
+
+  distanceFromLandingSite(point: Vector): number {
+    return this._landingSite.getDistanceTo(point);
+  }
 }

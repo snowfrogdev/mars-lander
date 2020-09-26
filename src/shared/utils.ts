@@ -48,6 +48,10 @@ export function getRandomElementFrom<T>(array: Array<T> | ReadonlyArray<T>): T {
   return array[index];
 }
 
+export function getRandomBinomial(): number {
+  return Math.random() - Math.random();
+}
+
 /**
  * A function that removes and returns a random element from an `arrray`.
  */

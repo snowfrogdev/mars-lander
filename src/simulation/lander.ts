@@ -3,10 +3,23 @@ import { clamp, radiansFrom } from '../shared/utils';
 import { Vector } from '../shared/vector';
 
 export class Lander {
+  get rotationAngle() {
+    return this._rotationAngle;
+  }
+  get thrust() {
+    return this._thrust;
+  }
+
   private _previousPosition: Vector;
   private _lastMovement: LineSegment;
   public get lastMovement(): LineSegment {
     return this._lastMovement;
+  }
+  public get position(): Vector {
+    return this._position;
+  }
+  public get fuel(): number {
+    return this._fuel;
   }
 
   constructor(

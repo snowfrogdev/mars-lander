@@ -4,8 +4,18 @@ import { Mars } from './mars';
 export class Simulation {
   private _isOver = false;
   private _hasLanded = false;
+  
+  public get distanceToLanding(): number {
+    return this._mars.distanceFromLandingSite(this._lander.position)
+  }
+  public get fuel(): number {
+    return this._lander.fuel;
+  }
   public get isOver() {
     return this._isOver;
+  }
+  public get hasLanded() {
+    return this._hasLanded;
   }
   public get turn() {
     return this._turn;
@@ -16,7 +26,6 @@ export class Simulation {
   set rotationAngle(value: number) {
     this._lander.rotationAngle = value;
   }
-
   set thrust(value: number) {
     this._lander.thrust = value;
   }
@@ -38,7 +47,7 @@ export class Simulation {
       this._lander.setCollisionPoint(this._mars.getCollisionPointWith(this._lander.lastMovement));
       this._isOver = true;
       if (!this._mars.isOnLandingSite(this._lander.lastMovement)) {
-        console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
+        // console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
         return;
       }
 
@@ -48,14 +57,14 @@ export class Simulation {
         return;
       }
 
-      console.error(
+      /* console.error(
         'Failure: Mars Lander did not land in a safe position and speed and crashed. Opportunity has been destroyed.'
-      );
+      ); */
     }
 
     if (this._mars.isMovingOutOfBounds(this._lander.lastMovement)) {
       this._isOver = true;
-      console.error('Failure: Out of bounds.');
+      //console.error('Failure: Out of bounds.');
     }
   }
 
