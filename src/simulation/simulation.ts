@@ -1,67 +1,65 @@
-import { clamp, radiansFrom } from '../shared/Utils';
+import { Lander } from './lander';
 import { Mars } from './mars';
-import { Point } from './point';
 
 export class Simulation {
-  constructor(
-    private _mars: Mars,
-    private _lander: Point,
-    private _fuel: number,
-    private _horizontalSpeed = 0,
-    private _verticalSpeed = 0,
-    private _rotationAngle = 0,
-    private _thrust = 0,
-    private _turn = 0
-  ) {}
+  private _isOver = false;
+  private _hasLanded = false;
+  public get isOver() {
+    return this._isOver;
+  }
+  public get turn() {
+    return this._turn;
+  }
+
+  constructor(private _mars: Mars, private _lander: Lander, private _turn = 0) {}
 
   set rotationAngle(value: number) {
-    if (value < -90 || value > 90) throw RangeError('Rotation angle should be -90 ≤ rotate ≤ 90 but was ' + value);
-    this._rotationAngle = clamp(value, this._rotationAngle - 15, this._rotationAngle + 15);
+    this._lander.rotationAngle = value;
   }
 
   set thrust(value: number) {
-    if (value < 0 || value > 4) throw RangeError('Thrust should be 0 ≤ power ≤ 4 but was ' + value);
-    this._thrust = clamp(value, this._thrust - 1, this._thrust + 1);
+    this._lander.thrust = value;
   }
 
   advance() {
+    if (this._isOver) {
+      console.error('Simulation is over.');
+      return;
+    }
     this._turn++;
 
-    this._moveLander();
-    this._consumeFuel();
+    this._lander.move();
+    this._lander.consumeFuel();
+    this._handleCollision();
   }
 
-  private _moveLander() {
-    const newHorizontalSpeed: number = this._computeHorizontalSpeed();
-    const newVerticalSpeed: number = this._computeVerticalSpeed();
-    this._lander.x += (newHorizontalSpeed + this._horizontalSpeed) / 2;
-    this._lander.y += (newVerticalSpeed + this._verticalSpeed) / 2;
+  private _handleCollision() {
+    if (this._mars.hasCollisionWith(this._lander.lastMovement)) {
+      this._lander.setCollisionPoint(this._mars.getCollisionPointWith(this._lander.lastMovement));
+      this._isOver = true;
+      if (!this._mars.isOnLandingSite(this._lander.lastMovement)) {
+        console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
+        return;
+      }
 
-    this._horizontalSpeed = newHorizontalSpeed;
-    this._verticalSpeed = newVerticalSpeed;
-  }
+      if (this._lander.canLandSafely()) {
+        this._hasLanded = true;
+        console.error('Successful landing');
+        return;
+      }
 
-  private _computeVerticalSpeed(): number {
-    const verticalThrust = this._thrust * Math.cos(radiansFrom(this._rotationAngle));
-    const gravity = 3.711;
-    return this._verticalSpeed - gravity + verticalThrust;
-  }
+      console.error(
+        'Failure: Mars Lander did not land in a safe position and speed and crashed. Opportunity has been destroyed.'
+      );
+    }
 
-  private _computeHorizontalSpeed(): number {
-    return this._horizontalSpeed - this._thrust * Math.sin(radiansFrom(this._rotationAngle));
-  }
-
-  private _consumeFuel() {
-    this._fuel -= this._thrust;
+    if (this._mars.isMovingOutOfBounds(this._lander.lastMovement)) {
+      this._isOver = true;
+      console.error('Failure: Out of bounds.');
+    }
   }
 
   toString(): string {
-    const r = Math.round;
-    const firstLine = `X=${r(this._lander.x)}m, Y=${r(this._lander.y)}m, HSpeed=${r(
-      this._horizontalSpeed
-    )}m/s, VSpeed=${r(this._verticalSpeed)}m/s`;
-    const secondLine = `Fuel=${this._fuel}l, Angle=${this._rotationAngle}°, Power=${this._thrust} (${this._thrust}.0m/s2), Turn=${this._turn}`;
-
-    return firstLine + '\n' + secondLine;
+    return `Turn=${this._turn}` + '\n' + this._lander.toString();
   }
 }
