@@ -1,33 +1,73 @@
+import { Vector } from '../shared/vector';
 import { Lander } from './lander';
+import { LanderData } from "./lander-data";
 import { Mars } from './mars';
 
 export class Simulation {
   private _isOver = false;
   private _hasLanded = false;
+  private _mars: Mars;
+  private _lander: Lander;
+  private _log: LanderData[] = [];
+
+  get log(): ReadonlyArray<LanderData> {
+    return this._log;
+  }
   
-  public get distanceToLanding(): number {
-    return this._mars.distanceFromLandingSite(this._lander.position)
+  get fuel(): number {
+    return this._lander.landerData.fuel;
   }
-  public get fuel(): number {
-    return this._lander.fuel;
-  }
-  public get isOver() {
+  get isOver() {
     return this._isOver;
   }
-  public get hasLanded() {
-    return this._hasLanded;
-  }
-  public get turn() {
+
+  get turn() {
     return this._turn;
   }
 
-  constructor(private _mars: Mars, private _lander: Lander, private _turn = 0) {}
+  constructor(
+    mars: Vector[],
+    position: Vector,
+    fuel: number,
+    horizontalSpeed = 0,
+    verticalSpeed = 0,
+    rotationAngle = 0,
+    thrust = 0,
+    private _turn = 0
+  ) {
+    this._mars = new Mars(mars.map((coords) => new Vector(coords.x, coords.y)));
+    const onCollision = (landed: boolean) => {
+      this._isOver = true;
+      if (landed) this._hasLanded = true;
+    };
 
-  set rotationAngle(value: number) {
-    this._lander.rotationAngle = value;
+    this._lander = new Lander(
+      position,
+      fuel,
+      this._mars,
+      onCollision,
+      horizontalSpeed,
+      verticalSpeed,
+      rotationAngle,
+      thrust
+    );
+
+    this._log.push(this._lander.landerData);
   }
-  set thrust(value: number) {
-    this._lander.thrust = value;
+
+  getScore(params: number[]): number {
+    const startingFuel = this.fuel;
+    for (let i = 1; i < params.length; i += 2) {
+      this._lander.setRotationAngle(params[i - 1]);
+      this._lander.setThrust(params[i]);
+      this.advance();
+
+      if (this.isOver) {
+        break;
+      }
+    }
+
+    return (this._distanceToLanding() + startingFuel - this.fuel) * (this._hasLanded ? 1 : 2);
   }
 
   advance() {
@@ -37,35 +77,12 @@ export class Simulation {
     }
     this._turn++;
 
-    this._lander.move();
-    this._lander.consumeFuel();
-    this._handleCollision();
+    this._lander.update();
+    this._log.push(this._lander.landerData);
   }
 
-  private _handleCollision() {
-    if (this._mars.hasCollisionWith(this._lander.lastMovement)) {
-      this._lander.setCollisionPoint(this._mars.getCollisionPointWith(this._lander.lastMovement));
-      this._isOver = true;
-      if (!this._mars.isOnLandingSite(this._lander.lastMovement)) {
-        // console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
-        return;
-      }
-
-      if (this._lander.canLandSafely()) {
-        this._hasLanded = true;
-        console.error('Successful landing');
-        return;
-      }
-
-      /* console.error(
-        'Failure: Mars Lander did not land in a safe position and speed and crashed. Opportunity has been destroyed.'
-      ); */
-    }
-
-    if (this._mars.isMovingOutOfBounds(this._lander.lastMovement)) {
-      this._isOver = true;
-      //console.error('Failure: Out of bounds.');
-    }
+  private _distanceToLanding(): number {
+    return this._mars.distanceFromLandingSite(this._lander.landerData.position);
   }
 
   toString(): string {
