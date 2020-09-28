@@ -9,7 +9,15 @@ export class Lander {
   private _lastMovement: LineSegment;
 
   get landerData(): LanderData {
-    return new LanderData(this._position, this._lastMovement, this._fuel, this._rotationAngle, this._thrust);
+    return new LanderData(
+      this._position,
+      this._lastMovement,
+      this._fuel,
+      this._rotationAngle,
+      this._thrust,
+      this._verticalSpeed,
+      this._horizontalSpeed
+    );
   }
 
   constructor(
@@ -20,7 +28,7 @@ export class Lander {
     private _horizontalSpeed = 0,
     private _verticalSpeed = 0,
     private _rotationAngle = 0,
-    private _thrust = 0,
+    private _thrust = 0
   ) {
     this._previousPosition = _position;
     this._lastMovement = new LineSegment(this._previousPosition, this._position);
@@ -83,28 +91,28 @@ export class Lander {
     if (this._mars.hasCollisionWith(lastMovement)) {
       this._position = this._mars.getCollisionPointWith(lastMovement);
       this._lastMovement = new LineSegment(lastMovement.pointA, this._position);
-      
+
       if (!this._mars.isOnLandingSite(lastMovement)) {
-        console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
+        // console.error('Failure: Mars Lander crashed on non-flat ground. Opportunity has been destroyed.');
         this._onCollision(false);
         return;
       }
 
       if (this._canLandSafely()) {
         this._onCollision(true);
-        console.error('Successful landing');
+        // console.error('Successful landing');
         return;
       }
 
       this._onCollision(false);
-      console.error(
+      /* console.error(
         'Failure: Mars Lander did not land in a safe position and speed and crashed. Opportunity has been destroyed.'
-      );
+      ); */
     }
 
     if (this._mars.isMovingOutOfBounds(lastMovement)) {
       this._onCollision(false);
-      console.error('Failure: Out of bounds.');
+      // console.error('Failure: Out of bounds.');
     }
   }
 

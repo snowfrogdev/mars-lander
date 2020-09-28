@@ -1,17 +1,22 @@
-import { clamp, getRandomIntInclusive } from "../../src/shared/utils";
-import { Vector } from "../../src/shared/vector";
-import { Simulation } from "../../src/simulation/simulation";
+import { clamp, getRandomElementFrom, getRandomIntInclusive, loopFor } from '../../src/shared/utils';
+import { Vector } from '../../src/shared/vector';
+import { Simulation } from '../../src/simulation/simulation';
 
 const canvas = <HTMLCanvasElement>document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
-
-ctx.fillStyle = 'black';
-ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.translate(0, canvas.height);
 ctx.scale(1 / 7, -1 / 7);
 
+
+
 const runButton = <HTMLButtonElement>document.getElementById('run');
-runButton.addEventListener('click', run);
+runButton.addEventListener('click', optimize);
+const stopButton = <HTMLButtonElement>document.getElementById('stop');
+stopButton.addEventListener('click', stop);
+const stepButton = <HTMLButtonElement>document.getElementById('step');
+stepButton.addEventListener('click', () => getNextGeneration());
+const resetButton = <HTMLButtonElement>document.getElementById('reset');
+resetButton.addEventListener('click', reset);
 
 const mars = [
   new Vector(0, 100),
@@ -22,32 +27,153 @@ const mars = [
   new Vector(5500, 150),
   new Vector(6999, 800),
 ];
-  
+
 const startingFuel = 550;
-const startingPosition = new Vector(2500, 2700)
+const startingPosition = new Vector(2500, 2700);
+
+let bestScore = Infinity;
+let averageScore = Infinity;
+let generation = 0;
+let simulations = 0;
+let landed = false;
+
+resetCanvas();
+
+
+function resetCanvas() {
+  ctx.clearRect(0, 0, canvas.width * 7, canvas.height * 7);
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, canvas.width * 7, canvas.height * 7);
+  drawLandscape();
+  drawStartPosition();
+}
+
+function drawStats() {
+  ctx.save();
+  ctx.scale(7, -7);
+  ctx.translate(0, -canvas.height);
+  ctx.font = '15px sans-serif';
+  ctx.textAlign = 'start';
+  ctx.fillText(`Simulations: ${simulations}`, 10, 20);
+  ctx.fillText(`Generation: ${generation}`, 10, 40);
+  ctx.fillText(`Best Score: ${bestScore}`, 10, 60);
+  ctx.fillText(`Average Score: ${averageScore}`, 10, 80);
+  ctx.fillText(`Landed: ${landed}`, 10, 100);
+  ctx.restore();
+}
+
+let population = [...Array(100)].map(() => getInitialParams(100, 0, 0));
+
+function reset() {
+  bestScore = Infinity;
+  averageScore = Infinity;
+  generation = 0;
+  simulations = 0;
+  resetCanvas();
+
+  population = [...Array(100)].map(() => getInitialParams(100, 0, 0));
+}
+
+let id: number;
+
+function stop() {
+  cancelAnimationFrame(id);
+}
+
+function optimize() {
+  getNextGeneration(); 
+  id = requestAnimationFrame(optimize);
+}
+
+function getNextGeneration() {
+  resetCanvas();
+  const sims = population.map((params) => new Simulation(mars, params, startingPosition, startingFuel));
+  sims.forEach(sim => run(sim));
+  landed = sims.some(sim => sim.hasLanded);
+  if (landed) {
+    console.log('landed');
+    stop();
+  };
+  sims.sort((a, b) => a.score - b.score);
+
+  let newPopulation = crossover(sims);
+  newPopulation = mutate(newPopulation);
+  newPopulation[0] = sims[0].params; //elitism;
+
+  population = newPopulation;
+
+  updateStats(sims);
+}
+
+function updateStats(sims: Simulation[]) {
+  generation++;
+  simulations += sims.length;
+  bestScore = Math.round((sims[0].score + Number.EPSILON) * 100) / 100;
+  averageScore = Math.round((sims.reduce((p, c) => p + c.score, 0) / sims.length + Number.EPSILON) * 100) / 100;
+  drawStats();
+}
+
+function mutate(population: number[][]): number[][] {
+  for (let genome of population) {
+    for (let i = 0; i < genome.length; i++) {
+      if (Math.random() < 0.05) {
+        genome[i] = i % 2 === 0 ? randomRotation(genome[i - 2]) : randomThrust(genome[i - 2]) 
+      }
+    }
+  }
+
+  return population;
+}
+
+function randomRotation(previousRotation: number | undefined): number {
+  const minRotation = clamp(previousRotation?? -90 - 15, -90, 90);
+  const maxRotation = clamp(previousRotation?? 90 + 15, -90, 90);
+
+  return getRandomIntInclusive(minRotation, maxRotation);
+}
+
+function randomThrust(previousThrust: number | undefined): number {
+  const minThrust = clamp(previousThrust?? 0 - 1, 0, 4);
+  const maxThrust = clamp(previousThrust?? 4 + 1, 0, 4);
+
+  return getRandomIntInclusive(minThrust, maxThrust);
+}
+
+function crossover(sims: Simulation[]): number[][] {
+  const topHalf: number[][] = sims
+    .slice(0, sims.length / 2)
+    .map((sim) => sim.params);
   
+  const newPopulation = [...Array(sims.length)].map((_) => {
+    const parentA = getRandomElementFrom(topHalf);
+    const parentB = getRandomElementFrom(topHalf);
+    const child = []
 
-drawLandscape();
-drawStartPosition();
+    for (let i = 0; i < parentA.length; i++) {
+      child[i] = i % 2 === 0 ? parentA[i] : parentB[i]
+    }
 
+    return child;
+  });
 
+  return newPopulation;
+}
 
+function run(simulation: Simulation) {
+  simulation.run();
+  const lastEntry = simulation.log[simulation.log.length - 1];
+  const landingSpeeds = Math.abs(lastEntry.horizontalSpeed) <= 20 && Math.abs(lastEntry.verticalSpeed) <= 40;
+  ctx.strokeStyle = 'white';
+  if (landingSpeeds) ctx.strokeStyle = 'yellow';
+  if (simulation.hasLanded) ctx.strokeStyle = 'green';
+  ctx.lineWidth = 5;
 
-function run() {
-  const simulation = new Simulation(mars, startingPosition, startingFuel);
-  const score = simulation.getScore(getInitialParams(100, 0, 0));
-
-  for (let entry of simulation.log) {
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 5;
+  for (let entry of simulation.log) {    
     ctx.beginPath();
     ctx.moveTo(entry.lastMovement.pointA.x, entry.lastMovement.pointA.y);
-    console.log(entry);
     ctx.lineTo(entry.lastMovement.pointB.x, entry.lastMovement.pointB.y);
     ctx.stroke();
   }
-
-  console.log(score);
 }
 
 function drawLandscape() {

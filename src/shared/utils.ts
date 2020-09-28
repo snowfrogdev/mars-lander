@@ -1,6 +1,3 @@
-import { LineSegment } from './line-segment';
-import { Vector } from './vector';
-
 /**
  * When running in browsers supporting performance.now(), or in Node.js, this function will
  * return the time elapsed, in milliseconds, since the time origin. If running
@@ -12,7 +9,7 @@ import { Vector } from './vector';
 export let now: () => number;
 try {
   if (typeof window !== 'undefined') {
-    now = performance.now;
+    now = () => performance.now();
   } else {
     const { performance } = require('perf_hooks');
     now = performance.now;

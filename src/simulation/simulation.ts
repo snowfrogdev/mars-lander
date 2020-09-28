@@ -4,29 +4,46 @@ import { LanderData } from "./lander-data";
 import { Mars } from './mars';
 
 export class Simulation {
-  private _isOver = false;
-  private _hasLanded = false;
-  private _mars: Mars;
-  private _lander: Lander;
-  private _log: LanderData[] = [];
-
-  get log(): ReadonlyArray<LanderData> {
-    return this._log;
-  }
-  
-  get fuel(): number {
-    return this._lander.landerData.fuel;
+  public get params(): number[] {
+    return this._params;
   }
   get isOver() {
     return this._isOver;
   }
+  private _isOver = false;
+  get log(): ReadonlyArray<LanderData> {
+    return this._log;
+  }
+  private _log: LanderData[] = [];
+  get fuel(): number {
+    return this._lander.landerData.fuel;
+  }
+  get score(): number {
+    const startingFuel = this._log[0].fuel;
+    const lastEntry = this.log[this.log.length - 1];
+    const excessHSpeed = Math.max(Math.abs(lastEntry.horizontalSpeed) - 20, 0);
+    const excessVSpeed = Math.max(Math.abs(lastEntry.verticalSpeed) - 40, 0);
+    const angle = Math.abs(lastEntry.rotationAngle);
+    const fuelBurned = startingFuel - this.fuel;
 
+    return (
+      (this._distanceToLanding() + excessHSpeed + excessVSpeed + angle ) *
+      (this.hasLanded ? 1 : 10) /* + fuelBurned * 0.1 */
+    );    
+  }
   get turn() {
     return this._turn;
   }
+  get hasLanded() {
+    return this._hasLanded;
+  }
+  private _hasLanded = false;
+  private _mars: Mars;
+  private _lander: Lander;
 
   constructor(
     mars: Vector[],
+    private _params: number[],
     position: Vector,
     fuel: number,
     horizontalSpeed = 0,
@@ -55,22 +72,19 @@ export class Simulation {
     this._log.push(this._lander.landerData);
   }
 
-  getScore(params: number[]): number {
-    const startingFuel = this.fuel;
-    for (let i = 1; i < params.length; i += 2) {
-      this._lander.setRotationAngle(params[i - 1]);
-      this._lander.setThrust(params[i]);
-      this.advance();
+  run(): void {
+    for (let i = 1; i < this._params.length; i += 2) {
+      this._lander.setRotationAngle(this._params[i - 1]);
+      this._lander.setThrust(this._params[i]);
+      this._advance();
 
       if (this.isOver) {
         break;
       }
     }
-
-    return (this._distanceToLanding() + startingFuel - this.fuel) * (this._hasLanded ? 1 : 2);
   }
 
-  advance() {
+  private _advance() {
     if (this._isOver) {
       console.error('Simulation is over.');
       return;

@@ -7,6 +7,8 @@ export class LanderData {
     readonly lastMovement: LineSegment,
     readonly fuel: number,
     readonly rotationAngle: number,
-    readonly thrust: number
+    readonly thrust: number,
+    readonly verticalSpeed: number,
+    readonly horizontalSpeed: number,
   ) { }
 }
