@@ -83,6 +83,7 @@ function stop() {
 function optimize() {
   getNextGeneration(); 
   id = requestAnimationFrame(optimize);
+  if (landed) cancelAnimationFrame(id);
 }
 
 function getNextGeneration() {
@@ -90,15 +91,12 @@ function getNextGeneration() {
   const sims = population.map((params) => new Simulation(mars, params, startingPosition, startingFuel));
   sims.forEach(sim => run(sim));
   landed = sims.some(sim => sim.hasLanded);
-  if (landed) {
-    console.log('landed');
-    stop();
-  };
   sims.sort((a, b) => a.score - b.score);
+  landed ? console.log(sims[0].params.toString()) : null;
 
   let newPopulation = crossover(sims);
   newPopulation = mutate(newPopulation);
-  newPopulation[0] = sims[0].params; //elitism;
+  newPopulation[newPopulation.length - 1] = sims[0].params; //elitism;
 
   population = newPopulation;
 
@@ -116,7 +114,7 @@ function updateStats(sims: Simulation[]) {
 function mutate(population: number[][]): number[][] {
   for (let genome of population) {
     for (let i = 0; i < genome.length; i++) {
-      if (Math.random() < 0.05) {
+      if (Math.random() < 0.50) {
         genome[i] = i % 2 === 0 ? randomRotation(genome[i - 2]) : randomThrust(genome[i - 2]) 
       }
     }
@@ -144,7 +142,7 @@ function crossover(sims: Simulation[]): number[][] {
     .slice(0, sims.length / 2)
     .map((sim) => sim.params);
   
-  const newPopulation = [...Array(sims.length)].map((_) => {
+  /* const newPopulation = [...Array(sims.length)].map((_) => {
     const parentA = getRandomElementFrom(topHalf);
     const parentB = getRandomElementFrom(topHalf);
     const child = []
@@ -155,7 +153,27 @@ function crossover(sims: Simulation[]): number[][] {
 
     return child;
   });
+ */
+  
+  let newPopulation: number[][] = [];
 
+  for (let i = 1; i < topHalf.length; i += 2) {
+    if (!topHalf[i]) break;
+
+    const parent1 = topHalf[i];
+    const parent2 = topHalf[i - 1];
+    const child1 = [];
+    const child2 = [];
+
+    for (let j = 0; j < topHalf[0].length; j++) {
+      const random = Math.random();
+      child1[j] = Math.round(random * parent1[j] + (1 - random) * parent2[j]);
+      child2[j] = Math.round((1 - random) * parent1[j] + random * parent2[j]);
+    }
+
+    newPopulation.push(child1, child1, child2, child2);    
+  }
+  
   return newPopulation;
 }
 

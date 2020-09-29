@@ -26,10 +26,8 @@ export class Simulation {
     const angle = Math.abs(lastEntry.rotationAngle);
     const fuelBurned = startingFuel - this.fuel;
 
-    return (
-      (this._distanceToLanding() + excessHSpeed + excessVSpeed + angle ) *
-      (this.hasLanded ? 1 : 10) /* + fuelBurned * 0.1 */
-    );    
+    return (this._distanceToLanding() * 0.004 + excessHSpeed + excessVSpeed + angle + fuelBurned * 0.004) * (this.hasLanded ? 1 : 2);
+    //return (excessHSpeed + excessVSpeed + angle) * (this.hasLanded ? 1 : 2);
   }
   get turn() {
     return this._turn;
