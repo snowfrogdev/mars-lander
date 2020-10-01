@@ -12,6 +12,7 @@
   "author": "Philippe Vaillancourt <phil@snowfrog.dev> (https://snowfrog.dev)",
   "license": "ISC",
   "devDependencies": {
+    "@types/colornames": "^1.1.1",
     "@types/jest": "^26.0.14",
     "@types/node": "^14.11.2",
     "@typescript-eslint/eslint-plugin": "^4.2.0",
@@ -27,5 +28,9 @@
     "typescript": "^4.0.3",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "colornames": "^1.1.1",
+    "pixi.js": "^5.3.3"
   }
 }

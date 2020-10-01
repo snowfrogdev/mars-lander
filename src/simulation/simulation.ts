@@ -4,7 +4,7 @@ import { LanderData } from "./lander-data";
 import { Mars } from './mars';
 
 export class Simulation {
-  public get params(): number[] {
+  public get params(): ReadonlyArray<number> {
     return this._params;
   }
   get isOver() {
@@ -15,20 +15,7 @@ export class Simulation {
     return this._log;
   }
   private _log: LanderData[] = [];
-  get fuel(): number {
-    return this._lander.landerData.fuel;
-  }
-  get score(): number {
-    const startingFuel = this._log[0].fuel;
-    const lastEntry = this.log[this.log.length - 1];
-    const excessHSpeed = Math.max(Math.abs(lastEntry.horizontalSpeed) - 20, 0);
-    const excessVSpeed = Math.max(Math.abs(lastEntry.verticalSpeed) - 40, 0);
-    const angle = Math.abs(lastEntry.rotationAngle);
-    const fuelBurned = startingFuel - this.fuel;
-
-    return (this._distanceToLanding() * 0.004 + excessHSpeed + excessVSpeed + angle + fuelBurned * 0.004) * (this.hasLanded ? 1 : 2);
-    //return (excessHSpeed + excessVSpeed + angle) * (this.hasLanded ? 1 : 2);
-  }
+  
   get turn() {
     return this._turn;
   }
@@ -41,7 +28,7 @@ export class Simulation {
 
   constructor(
     mars: Vector[],
-    private _params: number[],
+    private _params: ReadonlyArray<number>,
     position: Vector,
     fuel: number,
     horizontalSpeed = 0,
@@ -93,8 +80,8 @@ export class Simulation {
     this._log.push(this._lander.landerData);
   }
 
-  private _distanceToLanding(): number {
-    return this._mars.distanceFromLandingSite(this._lander.landerData.position);
+  public distanceToLanding(position: Vector): number {
+    return this._mars.distanceFromLandingSite(position);
   }
 
   toString(): string {

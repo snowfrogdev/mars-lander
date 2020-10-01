@@ -1,18 +1,15 @@
-export interface FitnessFunc {
+interface FitnessFunc {
   (): number;
 }
 export class Genome {
-  public get genes(): ReadonlyArray<number> {
+  get genes(): ReadonlyArray<number> {
     return this._genes;
   }
-  private _fitness = 0;
-  constructor(private _genes: number[], private _fitnessFunc: FitnessFunc) { }
+  fitness: number | undefined;
 
-  fitness(): number {
-    if (this._fitness)
-      return this._fitness;
-
-    this._fitness = this._fitnessFunc();
-    return this._fitness;
+  constructor(private _genes: number[]) { }
+  
+  setGene(index: number, value: number) {
+    this._genes[index] = value;
   }
 }
