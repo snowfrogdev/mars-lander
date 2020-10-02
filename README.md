@@ -1,1 +1,1 @@
-# CodinGame Contest TypeScript Starter
+# Codingame's Mars Lander Puzzle

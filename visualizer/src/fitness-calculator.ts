@@ -1,6 +1,7 @@
-import { FitnessCalculator } from '../../src/genetic/genetic-algorithm';
-import { Genome } from '../../src/genetic/Genome';
+import { FitnessCalculator } from '../../src/genetic-algorithm/genetic-algorithm';
+import { Genome } from '../../src/genetic-algorithm/Genome';
 import { spliceRandom } from '../../src/shared/utils';
+import { LanderData } from '../../src/simulation/lander-data';
 import { Scenario } from '../../src/simulation/scenario';
 import { Simulation } from '../../src/simulation/simulation';
 
@@ -11,7 +12,7 @@ export class FitnessBiases {
     public angle = 0.166666667,
     public fuelBurned = 0.166666667,
     public distance = 0.166666667,
-    public landed = 0.166666667,
+    public landed = 0.166666667
   ) {}
 
   static random(): FitnessBiases {
@@ -41,7 +42,11 @@ export class FitnessBiases {
 }
 
 export class FitnessCalculatorImp implements FitnessCalculator {
-  constructor(private _scenario: Scenario, private _biases: FitnessBiases) {}
+  constructor(
+    private _scenario: Scenario,
+    private _biases: FitnessBiases,
+    private _repoter?: (log: readonly LanderData[]) => void
+  ) {}
   run(population: Genome[]): void {
     population.forEach((genome) => (genome.fitness = this._calculateFitness(genome)));
   }
@@ -59,6 +64,8 @@ export class FitnessCalculatorImp implements FitnessCalculator {
     );
 
     sim.run();
+    
+    if (this._repoter) this._repoter(sim.log);
 
     const startingFuel = sim.log[0].fuel;
     const lastEntry = sim.log[sim.log.length - 1];

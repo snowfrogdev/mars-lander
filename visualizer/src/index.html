@@ -1,22 +1,30 @@
 <html>
-
-<head>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="index.ts" type="module" defer></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div class="button-row">
-        <select name="scenario" id="scenario-select"></select>
-    </div>  
-    <div id="view1"></div>  
-    <!-- <canvas id="canvas" width="1000" height ="429"></canvas> -->
-    <div class="button-row">        
-        <button id="run">Run</button>
-        <button id="stop">Stop</button>
-        <button id="step">Step</button>
-        <button id="reset">Reset</button>
+      <select name="scenario-select" id="scenario-select"></select>
+      <label for="population-size">Population Size (10-1000):</label>
+      <input
+        type="number"
+        name="population-size"
+        id="population-size"
+        min="10"
+        max="1000"
+        step="10"
+        value="150"
+      />
     </div>
-</body>
-
+    <div id="view1"></div>
+    <!-- <canvas id="canvas" width="1000" height ="429"></canvas> -->
+    <div class="button-row">
+      <button id="run">Run</button>
+      <button id="stop">Stop</button>
+      <button id="step">Step</button>
+      <button id="reset">Reset</button>
+    </div>
+  </body>
 </html>

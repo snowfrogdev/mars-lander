@@ -1,5 +1,5 @@
-import { Reproducer } from "../../src/genetic/genetic-algorithm";
-import { Genome } from "../../src/genetic/Genome";
+import { Reproducer } from "../../src/genetic-algorithm/genetic-algorithm";
+import { Genome } from "../../src/genetic-algorithm/Genome";
 
 export class OnePointReproducer implements Reproducer {
   constructor(private _crossoverPoint = 0.5) {}
@@ -13,8 +13,8 @@ export class OnePointReproducer implements Reproducer {
   }
 
   private _crossover(parent1: Genome, parent2: Genome): Genome[] {
-    const index = Math.round(parent1.genes.length - 1) * this._crossoverPoint;
-    const head1 = parent1.genes.slice(0, index + 1);
+    const index = Math.round((parent1.genes.length - 1) * this._crossoverPoint);
+    const head1 = parent1.genes.slice(0, index);
     const tail1 = parent1.genes.slice(index);
     const head2 = parent2.genes.slice(0, index);
     const tail2 = parent2.genes.slice(index);

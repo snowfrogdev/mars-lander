@@ -1,5 +1,5 @@
-import { Selector } from "../../src/genetic/genetic-algorithm";
-import { Genome } from "../../src/genetic/Genome";
+import { Selector } from "../../src/genetic-algorithm/genetic-algorithm";
+import { Genome } from "../../src/genetic-algorithm/Genome";
 
 export class TruncateSelector implements Selector {
   constructor(private _cutoff = 0.5) {}

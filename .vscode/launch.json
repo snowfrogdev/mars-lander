@@ -60,10 +60,8 @@
       "request": "launch",
       "preLaunchTask": "npm: start",
       "url": "http://localhost:1234",
-      "webRoot": "${workspaceFolder}",
-      "sourceMapPathOverrides": {
-        "../*": "${webRoot}/*"
-      }
+      "webRoot": "${workspaceFolder}/visualizer/build/output",
+      "breakOnLoad": true,
     }
   ]
 }

@@ -1,5 +1,5 @@
-import { Mutater } from '../../src/genetic/genetic-algorithm';
-import { Genome } from '../../src/genetic/Genome';
+import { Mutater } from '../../src/genetic-algorithm/genetic-algorithm';
+import { Genome } from '../../src/genetic-algorithm/Genome';
 import { clamp, getRandomIntInclusive } from '../../src/shared/utils';
 
 export class MutaterImp implements Mutater {
@@ -17,15 +17,15 @@ export class MutaterImp implements Mutater {
   }
 
   private _randomRotation(previousRotation: number | undefined): number {
-    const minRotation = clamp(previousRotation ?? -90 - 15, -90, 90);
-    const maxRotation = clamp(previousRotation ?? 90 + 15, -90, 90);
+    const minRotation = clamp((previousRotation ?? -90) - 15, -90, 90);
+    const maxRotation = clamp((previousRotation ?? 90) + 15, -90, 90);
 
     return getRandomIntInclusive(minRotation, maxRotation);
   }
 
   private _randomThrust(previousThrust: number | undefined): number {
-    const minThrust = clamp(previousThrust ?? 0 - 1, 0, 4);
-    const maxThrust = clamp(previousThrust ?? 4 + 1, 0, 4);
+    const minThrust = clamp((previousThrust ?? 0) - 1, 0, 4);
+    const maxThrust = clamp((previousThrust ?? 4) + 1, 0, 4);
 
     return getRandomIntInclusive(minThrust, maxThrust);
   }

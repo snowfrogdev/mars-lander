@@ -1,4 +1,4 @@
-import { clamp, getRandomElementFrom, getRandomIntInclusive, loopFor } from '../../src/shared/utils';
+import { clamp, getRandomIntInclusive } from '../../src/shared/utils';
 import { Vector } from '../../src/shared/vector';
 import { Simulation } from '../../src/simulation/simulation';
 
@@ -6,8 +6,6 @@ const canvas = <HTMLCanvasElement>document.getElementById('canvas');
 const ctx = <CanvasRenderingContext2D>canvas.getContext('2d');
 ctx.translate(0, canvas.height);
 ctx.scale(1 / 7, -1 / 7);
-
-
 
 const runButton = <HTMLButtonElement>document.getElementById('run');
 runButton.addEventListener('click', optimize);
@@ -38,7 +36,6 @@ let simulations = 0;
 let landed = false;
 
 resetCanvas();
-
 
 function resetCanvas() {
   ctx.clearRect(0, 0, canvas.width * 7, canvas.height * 7);
@@ -81,7 +78,7 @@ function stop() {
 }
 
 function optimize() {
-  getNextGeneration(); 
+  getNextGeneration();
   id = requestAnimationFrame(optimize);
   if (landed) cancelAnimationFrame(id);
 }
@@ -89,8 +86,8 @@ function optimize() {
 function getNextGeneration() {
   resetCanvas();
   const sims = population.map((params) => new Simulation(mars, params, startingPosition, startingFuel));
-  sims.forEach(sim => run(sim));
-  landed = sims.some(sim => sim.hasLanded);
+  sims.forEach((sim) => run(sim));
+  landed = sims.some((sim) => sim.hasLanded);
   sims.sort((a, b) => a.score - b.score);
   landed ? console.log(sims[0].params.toString()) : null;
 
@@ -114,8 +111,8 @@ function updateStats(sims: Simulation[]) {
 function mutate(population: number[][]): number[][] {
   for (let genome of population) {
     for (let i = 0; i < genome.length; i++) {
-      if (Math.random() < 0.50) {
-        genome[i] = i % 2 === 0 ? randomRotation(genome[i - 2]) : randomThrust(genome[i - 2]) 
+      if (Math.random() < 0.5) {
+        genome[i] = i % 2 === 0 ? randomRotation(genome[i - 2]) : randomThrust(genome[i - 2]);
       }
     }
   }
@@ -124,24 +121,22 @@ function mutate(population: number[][]): number[][] {
 }
 
 function randomRotation(previousRotation: number | undefined): number {
-  const minRotation = clamp(previousRotation?? -90 - 15, -90, 90);
-  const maxRotation = clamp(previousRotation?? 90 + 15, -90, 90);
+  const minRotation = clamp((previousRotation ?? -90) - 15, -90, 90);
+  const maxRotation = clamp((previousRotation ?? 90) + 15, -90, 90);
 
   return getRandomIntInclusive(minRotation, maxRotation);
 }
 
 function randomThrust(previousThrust: number | undefined): number {
-  const minThrust = clamp(previousThrust?? 0 - 1, 0, 4);
-  const maxThrust = clamp(previousThrust?? 4 + 1, 0, 4);
+  const minThrust = clamp((previousThrust ?? 0) - 1, 0, 4);
+  const maxThrust = clamp((previousThrust ?? 4) + 1, 0, 4);
 
   return getRandomIntInclusive(minThrust, maxThrust);
 }
 
 function crossover(sims: Simulation[]): number[][] {
-  const topHalf: number[][] = sims
-    .slice(0, sims.length / 2)
-    .map((sim) => sim.params);
-  
+  const topHalf: number[][] = sims.slice(0, sims.length / 2).map((sim) => sim.params);
+
   /* const newPopulation = [...Array(sims.length)].map((_) => {
     const parentA = getRandomElementFrom(topHalf);
     const parentB = getRandomElementFrom(topHalf);
@@ -154,7 +149,7 @@ function crossover(sims: Simulation[]): number[][] {
     return child;
   });
  */
-  
+
   let newPopulation: number[][] = [];
 
   for (let i = 1; i < topHalf.length; i += 2) {
@@ -171,9 +166,9 @@ function crossover(sims: Simulation[]): number[][] {
       child2[j] = Math.round((1 - random) * parent1[j] + random * parent2[j]);
     }
 
-    newPopulation.push(child1, child1, child2, child2);    
+    newPopulation.push(child1, child1, child2, child2);
   }
-  
+
   return newPopulation;
 }
 
@@ -186,7 +181,7 @@ function run(simulation: Simulation) {
   if (simulation.hasLanded) ctx.strokeStyle = 'green';
   ctx.lineWidth = 5;
 
-  for (let entry of simulation.log) {    
+  for (let entry of simulation.log) {
     ctx.beginPath();
     ctx.moveTo(entry.lastMovement.pointA.x, entry.lastMovement.pointA.y);
     ctx.lineTo(entry.lastMovement.pointB.x, entry.lastMovement.pointB.y);

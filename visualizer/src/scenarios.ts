@@ -35,7 +35,7 @@ export const scenarios: Scenario[] = [
       new Vector(6999, 2000),
     ],
     new Vector(6500, 2800),
-    100,
+    -100,
     0,
     600,
     90,

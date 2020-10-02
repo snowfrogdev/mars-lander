@@ -1,5 +1,5 @@
-import { Initializer } from "../../src/genetic/genetic-algorithm";
-import { Genome } from "../../src/genetic/Genome";
+import { Initializer } from "../../src/genetic-algorithm/genetic-algorithm";
+import { Genome } from "../../src/genetic-algorithm/Genome";
 import { clamp, getRandomIntInclusive } from "../../src/shared/utils";
 import { Scenario } from "../../src/simulation/scenario";
 

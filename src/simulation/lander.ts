@@ -7,6 +7,7 @@ import { Mars } from './mars';
 export class Lander {
   private _previousPosition: Vector;
   private _lastMovement: LineSegment;
+  private _hasLanded = false;
 
   get landerData(): LanderData {
     return new LanderData(
@@ -16,7 +17,8 @@ export class Lander {
       this._rotationAngle,
       this._thrust,
       this._verticalSpeed,
-      this._horizontalSpeed
+      this._horizontalSpeed,
+      this._hasLanded
     );
   }
 
@@ -99,6 +101,7 @@ export class Lander {
       }
 
       if (this._canLandSafely()) {
+        this._hasLanded = true;
         this._onCollision(true);
         // console.error('Successful landing');
         return;

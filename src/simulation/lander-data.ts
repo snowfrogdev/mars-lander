@@ -10,5 +10,6 @@ export class LanderData {
     readonly thrust: number,
     readonly verticalSpeed: number,
     readonly horizontalSpeed: number,
+    readonly hasLanded: boolean,
   ) { }
 }
