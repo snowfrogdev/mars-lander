@@ -1,9 +1,9 @@
-import { FitnessCalculator } from '../../src/genetic-algorithm/genetic-algorithm';
-import { Genome } from '../../src/genetic-algorithm/Genome';
-import { spliceRandom } from '../../src/shared/utils';
-import { LanderData } from '../../src/simulation/lander-data';
-import { Scenario } from '../../src/simulation/scenario';
-import { Simulation } from '../../src/simulation/simulation';
+import { FitnessCalculator } from '../../../src/genetic-algorithm/genetic-algorithm';
+import { Genome } from '../../../src/genetic-algorithm/Genome';
+import { spliceRandom } from '../../../src/shared/utils';
+import { LanderData } from '../../../src/simulation/lander-data';
+import { Scenario } from '../../../src/simulation/scenario';
+import { Simulation } from '../../../src/simulation/simulation';
 
 export class FitnessBiases {
   constructor(

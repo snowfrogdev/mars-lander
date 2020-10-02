@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import { simulations, generation, bestScore, averageScore, landed } from './index';
+import { simulations, generation, bestScore, averageScore, landed } from '../index';
 
 export function initializeText() {
   const textStyle = new PIXI.TextStyle({ fontFamily: 'sans-serif', fontSize: 15, align: 'start', fill: 'white' });

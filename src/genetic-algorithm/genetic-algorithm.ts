@@ -80,6 +80,8 @@ export class GeneticAlgorithm {
 
     this._mutater.run(children);
 
+    children[children.length - 1] = this._fittestGenome();
+
     this._population = children;
   }
 

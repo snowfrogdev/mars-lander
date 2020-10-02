@@ -2,14 +2,14 @@ import * as PIXI from 'pixi.js';
 import { GeneticAlgorithm } from '../../src/genetic-algorithm/genetic-algorithm';
 import { LanderData } from '../../src/simulation/lander-data';
 import { Scenario } from '../../src/simulation/scenario';
-import { FitnessBiases, FitnessCalculatorImp } from './fitness-calculator';
-import { RandomInitializer } from './initializer';
-import { initializeText } from './initialize-text';
-import { MutaterImp } from './mutater';
-import { OnePointReproducer } from './reproducer';
-import { scenarios } from './scenarios';
-import { TruncateSelector } from './selector';
-import { TerminatorImp } from './terminator';
+import { FitnessBiases, FitnessCalculatorImp } from './algorithms/fitness-calculator';
+import { RandomInitializer } from './algorithms/initializer';
+import { initializeText } from './ui/initialize-text';
+import { MutaterImp } from './algorithms/mutater';
+import { OnePointReproducer } from './algorithms/reproducer';
+import { scenarios } from './data/scenarios';
+import { TruncateSelector } from './algorithms/selector';
+import { TerminatorImp } from './algorithms/terminator';
 import { colorNumber } from './third-party-wrappers/colorNumber';
 
 const app = new PIXI.Application({ width: 1000, height: 429, antialias: true });
@@ -24,6 +24,16 @@ const scenarioSelect = <HTMLSelectElement>document.getElementById('scenario-sele
 scenarioSelect.addEventListener('change', loadScenario);
 const populationSize = <HTMLInputElement>document.getElementById('population-size');
 populationSize.addEventListener('change', loadScenario);
+const mutationRate = <HTMLInputElement>document.getElementById('mutation-rate');
+mutationRate.addEventListener('change', loadScenario);
+
+for (let i = 0; i < scenarios.length; i++) {
+  const option = document.createElement('option');
+  option.value = i.toString();
+  option.text = scenarios[i].name;
+  scenarioSelect.appendChild(option);
+}
+
 const hSpeedBias = <HTMLInputElement>document.getElementById('h-speed-bias');
 hSpeedBias.addEventListener('change', loadScenario);
 const vSpeedBias = <HTMLInputElement>document.getElementById('v-speed-bias');
@@ -47,12 +57,7 @@ stepButton.addEventListener('click', getNextGeneration);
 const resetButton = <HTMLButtonElement>document.getElementById('reset');
 resetButton.addEventListener('click', reset);
 
-for (let i = 0; i < scenarios.length; i++) {
-  const option = document.createElement('option');
-  option.value = i.toString();
-  option.text = scenarios[i].name;
-  scenarioSelect.appendChild(option);
-}
+
 
 let scenario: Scenario = scenarios[parseInt(scenarioSelect.value)];
 let landscape = new PIXI.Graphics();
@@ -97,7 +102,7 @@ function loadScenario() {
   const fitnessCalc = new FitnessCalculatorImp(scenario, biases, onSim);
   const selector = new TruncateSelector();
   const reproducer = new OnePointReproducer();
-  const mutater = new MutaterImp();
+  const mutater = new MutaterImp(+mutationRate.value);
   const terminator = new TerminatorImp(1000000, Infinity);
   ga = new GeneticAlgorithm(initializer, fitnessCalc, selector, reproducer, mutater, terminator);
 }
@@ -144,7 +149,10 @@ function onSim(log: readonly LanderData[]) {
   const landingSpeeds = Math.abs(lastEntry.horizontalSpeed) <= 20 && Math.abs(lastEntry.verticalSpeed) <= 40;
   trajectory.lineStyle(5, colorNumber('white'));
   if (landingSpeeds) trajectory.lineStyle(5, colorNumber('yellow'));
-  if (lastEntry.hasLanded) trajectory.lineStyle(5, colorNumber('green'));
+  if (lastEntry.hasLanded) {
+    trajectory.lineStyle(5, colorNumber('green'));
+    landed = true;
+  };
 
   for (let entry of log) {
     trajectory.moveTo(entry.lastMovement.pointA.x, entry.lastMovement.pointA.y);

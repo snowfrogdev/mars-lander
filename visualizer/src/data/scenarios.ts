@@ -1,5 +1,5 @@
-import { Vector } from '../../src/shared/vector';
-import { Scenario } from '../../src/simulation/scenario';
+import { Vector } from '../../../src/shared/vector';
+import { Scenario } from '../../../src/simulation/scenario';
 
 export const scenarios: Scenario[] = [
   new Scenario(
