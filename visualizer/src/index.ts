@@ -133,6 +133,7 @@ function reset() {
   averageScore = -Infinity;
   generation = 0;
   simulations = 0;
+  landed = false;
   loadScenario();
 }
 
