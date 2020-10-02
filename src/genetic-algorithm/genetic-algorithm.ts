@@ -28,6 +28,10 @@ export interface Terminator {
 export class GeneticAlgorithm {
   private _population: Genome[];
   private _generations = 0;
+  get generations() {
+    return this._generations;
+  }
+  
   constructor(
     private _initializer: Initializer,
     private _fitnessCalculator: FitnessCalculator,
@@ -77,5 +81,13 @@ export class GeneticAlgorithm {
 
   private _fittestGenome(): Genome {
     return this._population.sort((a, b) => b.fitness! - a.fitness!)[0];
+  }
+
+  bestScore(): number {
+    return this._fittestGenome().fitness!;
+  }
+
+  averageScore(): number {
+    return this._population.reduce((p, c) => p + c.fitness!, 0) / this._population.length;
   }
 }

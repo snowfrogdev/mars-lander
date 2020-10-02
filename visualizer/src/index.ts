@@ -4,6 +4,7 @@ import { LanderData } from '../../src/simulation/lander-data';
 import { Scenario } from '../../src/simulation/scenario';
 import { FitnessBiases, FitnessCalculatorImp } from './fitness-calculator';
 import { RandomInitializer } from './initializer';
+import { initializeText } from './initialize-text';
 import { MutaterImp } from './mutater';
 import { OnePointReproducer } from './reproducer';
 import { scenarios } from './scenarios';
@@ -12,6 +13,8 @@ import { TerminatorImp } from './terminator';
 import { colorNumber } from './third-party-wrappers/colorNumber';
 
 const app = new PIXI.Application({ width: 1000, height: 429, antialias: true });
+PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
+PIXI.settings.ROUND_PIXELS = true;
 app.stage.position.y = app.renderer.height / app.renderer.resolution;
 app.stage.scale.x = 1 / 7;
 app.stage.scale.y = -1 / 7;
@@ -56,17 +59,41 @@ let landscape = new PIXI.Graphics();
 let trajectory = new PIXI.Graphics();
 let ga: GeneticAlgorithm;
 
+export let bestScore = Infinity;
+export let averageScore = Infinity;
+export let generation = 0;
+export let simulations = 0;
+export let landed = false;
+
+const { simText, generationText, bestScoreText, averageScoreText, landedText } = initializeText();
+
+app.stage.addChild(simText, generationText, bestScoreText, averageScoreText, landedText);
+
 loadScenario();
 
 function loadScenario() {
   const scenarioIndex = scenarioSelect.value;
   scenario = scenarios[parseInt(scenarioIndex)];
-  totalBias.value =
-    (+hSpeedBias.value + +vSpeedBias.value + +angleBias.value + +fuelBias.value + +distanceBias.value + +landedBias.value).toFixed(2);
+  totalBias.value = (
+    +hSpeedBias.value +
+    +vSpeedBias.value +
+    +angleBias.value +
+    +fuelBias.value +
+    +distanceBias.value +
+    +landedBias.value
+  ).toFixed(2);
+
   resetCanvas();
 
   const initializer = new RandomInitializer(scenario, parseInt(populationSize.value));
-  const biases = new FitnessBiases(+hSpeedBias.value, +vSpeedBias.value, +angleBias.value, +fuelBias.value, +distanceBias.value, +landedBias.value);
+  const biases = new FitnessBiases(
+    +hSpeedBias.value,
+    +vSpeedBias.value,
+    +angleBias.value,
+    +fuelBias.value,
+    +distanceBias.value,
+    +landedBias.value
+  );
   const fitnessCalc = new FitnessCalculatorImp(scenario, biases, onSim);
   const selector = new TruncateSelector();
   const reproducer = new OnePointReproducer();
@@ -86,9 +113,21 @@ function stop() {
 function getNextGeneration() {
   resetCanvas();
   ga.step();
+  updateStats(ga);
+}
+
+function updateStats(ga: GeneticAlgorithm) {
+  generation++;
+  bestScore = Math.round((ga.bestScore() + Number.EPSILON) * 100) / 100;
+  averageScore = Math.round((ga.averageScore() + Number.EPSILON) * 100) / 100;
+  drawStats();
 }
 
 function reset() {
+  bestScore = Infinity;
+  averageScore = Infinity;
+  generation = 0;
+  simulations = 0;
   loadScenario();
 }
 
@@ -96,9 +135,11 @@ function resetCanvas() {
   clearCanvas();
   drawLandscape();
   drawStartPosition();
+  drawStats();
 }
 
 function onSim(log: readonly LanderData[]) {
+  simulations++;
   const lastEntry = log[log.length - 1];
   const landingSpeeds = Math.abs(lastEntry.horizontalSpeed) <= 20 && Math.abs(lastEntry.verticalSpeed) <= 40;
   trajectory.lineStyle(5, colorNumber('white'));
@@ -131,4 +172,12 @@ function drawStartPosition() {
   landscape.beginFill(colorNumber('white'));
   landscape.drawCircle(scenario.position.x, scenario.position.y, 20);
   landscape.endFill();
+}
+
+function drawStats() {
+  simText.text = `Simulations: ${simulations}`;
+  generationText.text = `Generation: ${generation}`;
+  bestScoreText.text = `Best Score: ${bestScore}`;
+  averageScoreText.text = `Average Score: ${averageScore}`;
+  landedText.text = `Landed: ${landed}`;
 }
