@@ -5,6 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "parcel visualizer/src/index.html --out-dir visualizer/build/output --cache-dir visualizer/build/cache",
+    "build:viz": "parcel build visualizer/src/index.html --out-dir docs --cache-dir docs/.cache",
     "test": "jest",
     "build": "webpack"
   },
@@ -18,6 +19,7 @@
     "@typescript-eslint/eslint-plugin": "^4.2.0",
     "@typescript-eslint/parser": "^4.2.0",
     "clean-webpack-plugin": "^3.0.0",
+    "cssnano": "^4.1.10",
     "eslint": "^7.9.0",
     "jest": "^26.4.2",
     "ts-jest": "^26.4.0",
