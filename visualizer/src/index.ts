@@ -21,6 +21,20 @@ const scenarioSelect = <HTMLSelectElement>document.getElementById('scenario-sele
 scenarioSelect.addEventListener('change', loadScenario);
 const populationSize = <HTMLInputElement>document.getElementById('population-size');
 populationSize.addEventListener('change', loadScenario);
+const hSpeedBias = <HTMLInputElement>document.getElementById('h-speed-bias');
+hSpeedBias.addEventListener('change', loadScenario);
+const vSpeedBias = <HTMLInputElement>document.getElementById('v-speed-bias');
+vSpeedBias.addEventListener('change', loadScenario);
+const angleBias = <HTMLInputElement>document.getElementById('angle-bias');
+angleBias.addEventListener('change', loadScenario);
+const fuelBias = <HTMLInputElement>document.getElementById('fuel-bias');
+fuelBias.addEventListener('change', loadScenario);
+const distanceBias = <HTMLInputElement>document.getElementById('distance-bias');
+distanceBias.addEventListener('change', loadScenario);
+const landedBias = <HTMLInputElement>document.getElementById('landed-bias');
+landedBias.addEventListener('change', loadScenario);
+const totalBias = <HTMLInputElement>document.getElementById('total-bias');
+
 const runButton = <HTMLButtonElement>document.getElementById('run');
 runButton.addEventListener('click', run);
 const stopButton = <HTMLButtonElement>document.getElementById('stop');
@@ -31,7 +45,7 @@ const resetButton = <HTMLButtonElement>document.getElementById('reset');
 resetButton.addEventListener('click', reset);
 
 for (let i = 0; i < scenarios.length; i++) {
-  const option = document.createElement("option");
+  const option = document.createElement('option');
   option.value = i.toString();
   option.text = scenarios[i].name;
   scenarioSelect.appendChild(option);
@@ -47,15 +61,17 @@ loadScenario();
 function loadScenario() {
   const scenarioIndex = scenarioSelect.value;
   scenario = scenarios[parseInt(scenarioIndex)];
+  totalBias.value =
+    (+hSpeedBias.value + +vSpeedBias.value + +angleBias.value + +fuelBias.value + +distanceBias.value + +landedBias.value).toFixed(2);
   resetCanvas();
 
   const initializer = new RandomInitializer(scenario, parseInt(populationSize.value));
-  const biases = new FitnessBiases();
+  const biases = new FitnessBiases(+hSpeedBias.value, +vSpeedBias.value, +angleBias.value, +fuelBias.value, +distanceBias.value, +landedBias.value);
   const fitnessCalc = new FitnessCalculatorImp(scenario, biases, onSim);
   const selector = new TruncateSelector();
   const reproducer = new OnePointReproducer();
   const mutater = new MutaterImp();
-  const terminator = new TerminatorImp(1000000, Infinity)
+  const terminator = new TerminatorImp(1000000, Infinity);
   ga = new GeneticAlgorithm(initializer, fitnessCalc, selector, reproducer, mutater, terminator);
 }
 
@@ -94,7 +110,7 @@ function onSim(log: readonly LanderData[]) {
     trajectory.lineTo(entry.lastMovement.pointB.x, entry.lastMovement.pointB.y);
     app.stage.addChild(trajectory);
   }
-};
+}
 
 function clearCanvas() {
   landscape.clear();
@@ -116,4 +132,3 @@ function drawStartPosition() {
   landscape.drawCircle(scenario.position.x, scenario.position.y, 20);
   landscape.endFill();
 }
-
