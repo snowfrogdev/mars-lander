@@ -5,7 +5,11 @@ export class OnePointReproducer implements Reproducer {
   constructor(private _crossoverPoint = 0.5) {}
   run(population: Genome[]): Genome[] {
     const children: Genome[] = [];
-    for (let i = 1; i < population.length; i ++) {
+    for (let i = 1; i <= population.length; i++) {
+      if (i === population.length) {
+        children.push(...this._crossover(population[i - 1], population[0]))
+        continue;
+      }
       children.push(...this._crossover(population[i - 1], population[i]));
     }
 
