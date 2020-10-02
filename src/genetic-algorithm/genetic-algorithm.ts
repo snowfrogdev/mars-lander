@@ -31,6 +31,14 @@ export class GeneticAlgorithm {
   get generations() {
     return this._generations;
   }
+  private _bestScore = -Infinity;
+  get bestScore() {
+    return this._bestScore;
+  }
+  private _averageScore = -Infinity;
+  get averageScore() {
+    return this._averageScore;
+  }
   
   constructor(
     private _initializer: Initializer,
@@ -56,6 +64,9 @@ export class GeneticAlgorithm {
   step(startTime: number = Infinity) {
     this._generations++;
     this._fitnessCalculator.run(this._population);
+
+    this._setBestScore();
+    this._setAverageScore();
 
     if (this._terminator.shouldTerminate(this._generations, performance.now() - startTime, this._population)) {
       return;
@@ -83,11 +94,11 @@ export class GeneticAlgorithm {
     return this._population.sort((a, b) => b.fitness! - a.fitness!)[0];
   }
 
-  bestScore(): number {
-    return this._fittestGenome().fitness!;
+  private _setBestScore(): void {
+    this._bestScore = this._fittestGenome().fitness!;
   }
 
-  averageScore(): number {
-    return this._population.reduce((p, c) => p + c.fitness!, 0) / this._population.length;
+  private _setAverageScore(): void {
+    this._averageScore = this._population.reduce((p, c) => p + c.fitness!, 0) / this._population.length;
   }
 }

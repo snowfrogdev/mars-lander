@@ -59,8 +59,8 @@ let landscape = new PIXI.Graphics();
 let trajectory = new PIXI.Graphics();
 let ga: GeneticAlgorithm;
 
-export let bestScore = Infinity;
-export let averageScore = Infinity;
+export let bestScore = -Infinity;
+export let averageScore = -Infinity;
 export let generation = 0;
 export let simulations = 0;
 export let landed = false;
@@ -118,14 +118,14 @@ function getNextGeneration() {
 
 function updateStats(ga: GeneticAlgorithm) {
   generation++;
-  bestScore = Math.round((ga.bestScore() + Number.EPSILON) * 100) / 100;
-  averageScore = Math.round((ga.averageScore() + Number.EPSILON) * 100) / 100;
+  bestScore = Math.round((ga.bestScore + Number.EPSILON) * 100) / 100;
+  averageScore = Math.round((ga.averageScore + Number.EPSILON) * 100) / 100;
   drawStats();
 }
 
 function reset() {
-  bestScore = Infinity;
-  averageScore = Infinity;
+  bestScore = -Infinity;
+  averageScore = -Infinity;
   generation = 0;
   simulations = 0;
   loadScenario();
