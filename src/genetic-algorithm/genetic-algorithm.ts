@@ -76,20 +76,11 @@ export class GeneticAlgorithm {
 
     const children = this._reproducer.run(selected);
 
-    this.adjustPopulationSize(children);
-
     this._mutater.run(children);
 
     children[children.length - 1] = this._fittestGenome();
 
     this._population = children;
-  }
-
-  private adjustPopulationSize(children: Genome[]) {
-    if (children.length < this._population.length) {
-      const difference = this._population.length - children.length;
-      children.push(...children.slice(0, difference));
-    }
   }
 
   private _fittestGenome(): Genome {
