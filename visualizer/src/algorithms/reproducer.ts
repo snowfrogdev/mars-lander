@@ -1,4 +1,4 @@
-import { Reproducer } from "../../../src/genetic-algorithm/genetic-algorithm";
+import { Reproducer } from "../../../src/genetic-algorithm/abstractions/abstractions";
 import { Genome } from "../../../src/genetic-algorithm/Genome";
 
 export class OnePointReproducer implements Reproducer {

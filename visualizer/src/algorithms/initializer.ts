@@ -1,4 +1,4 @@
-import { Initializer } from "../../../src/genetic-algorithm/genetic-algorithm";
+import { Initializer } from "../../../src/genetic-algorithm/abstractions/abstractions";
 import { Genome } from "../../../src/genetic-algorithm/Genome";
 import { clamp, getRandomIntInclusive } from "../../../src/shared/utils";
 import { Scenario } from "../../../src/simulation/scenario";

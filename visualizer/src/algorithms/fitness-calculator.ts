@@ -1,4 +1,4 @@
-import { FitnessCalculator } from '../../../src/genetic-algorithm/genetic-algorithm';
+import { FitnessCalculator } from "../../../src/genetic-algorithm/abstractions/abstractions";
 import { Genome } from '../../../src/genetic-algorithm/Genome';
 import { spliceRandom } from '../../../src/shared/utils';
 import { LanderData } from '../../../src/simulation/lander-data';

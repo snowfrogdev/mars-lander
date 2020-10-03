@@ -1,4 +1,4 @@
-import { Terminator } from "../../../src/genetic-algorithm/genetic-algorithm";
+import { Terminator } from "../../../src/genetic-algorithm/abstractions/abstractions";
 import { Genome } from "../../../src/genetic-algorithm/Genome";
 
 export class TerminatorImp implements Terminator  {
