@@ -5,7 +5,7 @@
   "main": "dist/main.js",
   "scripts": {
     "start": "parcel visualizer/src/index.html --out-dir visualizer/build/output --cache-dir visualizer/build/cache",
-    "build:viz": "parcel build visualizer/src/index.html --out-dir docs --cache-dir docs/.cache --public-url ./",
+    "build:viz": "parcel build visualizer/src/index.html --out-dir docs --cache-dir docs/.cache --public-url ./ --no-source-maps --experimental-scope-hoisting",
     "test": "jest",
     "build": "webpack"
   },
