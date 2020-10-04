@@ -7,7 +7,7 @@ import { RandomInitializer } from './algorithms/initializer';
 import { MutaterImp } from './algorithms/mutater';
 import { TruncateParentSelector } from './algorithms/parent-selector';
 import { OnePointReproducer } from './algorithms/reproducer';
-import { TruncateSurvivorSelector } from './algorithms/survivor-selector';
+import { AgedBasedSurvivorSelector, TruncateSurvivorSelector } from './algorithms/survivor-selector';
 import { TerminatorImp } from './algorithms/terminator';
 import { scenarios } from './data/scenarios';
 import { colorNumber } from './third-party-wrappers/colorNumber';
