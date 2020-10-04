@@ -41,6 +41,8 @@ export class GeneticAlgorithm {
 
   step(startTime: number = Infinity) {
     this._generations++;
+    this._population.forEach(genome => genome.incrementAge());
+    
     this._fitnessCalculator.run(this._population);
 
     this._setBestScore();
