@@ -2,14 +2,10 @@ import { Reproducer } from "../../../src/genetic-algorithm/abstractions/abstract
 import { Genome } from "../../../src/genetic-algorithm/Genome";
 
 export class OnePointReproducer implements Reproducer {
-  constructor(private _crossoverPoint = 0.5) {}
+  constructor(private _crossoverPoint: number) {}
   run(population: Genome[]): Genome[] {
     const children: Genome[] = [];
-    for (let i = 1; i <= population.length; i++) {
-      if (i === population.length) {
-        children.push(...this._crossover(population[i - 1], population[0]))
-        continue;
-      }
+    for (let i = 1; i <= population.length; i += 2) {
       children.push(...this._crossover(population[i - 1], population[i]));
     }
 

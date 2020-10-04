@@ -4,13 +4,14 @@ import { LanderData } from '../../src/simulation/lander-data';
 import { Scenario } from '../../src/simulation/scenario';
 import { FitnessBiases, FitnessCalculatorImp } from './algorithms/fitness-calculator';
 import { RandomInitializer } from './algorithms/initializer';
-import { initializeText } from './ui/initialize-text';
 import { MutaterImp } from './algorithms/mutater';
+import { TruncateParentSelector } from './algorithms/parent-selector';
 import { OnePointReproducer } from './algorithms/reproducer';
-import { scenarios } from './data/scenarios';
-import { TruncateSelector } from './algorithms/selector';
+import { TruncateSurvivorSelector } from './algorithms/survivor-selector';
 import { TerminatorImp } from './algorithms/terminator';
+import { scenarios } from './data/scenarios';
 import { colorNumber } from './third-party-wrappers/colorNumber';
+import { initializeText } from './ui/initialize-text';
 
 const app = new PIXI.Application({ width: 1000, height: 429, antialias: true });
 PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -24,6 +25,8 @@ const scenarioSelect = <HTMLSelectElement>document.getElementById('scenario-sele
 scenarioSelect.addEventListener('change', loadScenario);
 const populationSize = <HTMLInputElement>document.getElementById('population-size');
 populationSize.addEventListener('change', loadScenario);
+const truncateSelection = <HTMLInputElement>document.getElementById('truncate-selection');
+truncateSelection.addEventListener('change', loadScenario);
 const mutationRate = <HTMLInputElement>document.getElementById('mutation-rate');
 mutationRate.addEventListener('change', loadScenario);
 
@@ -56,8 +59,6 @@ const stepButton = <HTMLButtonElement>document.getElementById('step');
 stepButton.addEventListener('click', getNextGeneration);
 const resetButton = <HTMLButtonElement>document.getElementById('reset');
 resetButton.addEventListener('click', reset);
-
-
 
 let scenario: Scenario = scenarios[parseInt(scenarioSelect.value)];
 let landscape = new PIXI.Graphics();
@@ -100,11 +101,20 @@ function loadScenario() {
     +landedBias.value
   );
   const fitnessCalc = new FitnessCalculatorImp(scenario, biases, onSim);
-  const selector = new TruncateSelector();
-  const reproducer = new OnePointReproducer();
+  const parentSelector = new TruncateParentSelector(+truncateSelection.value);
+  const reproducer = new OnePointReproducer(0.5);
   const mutater = new MutaterImp(+mutationRate.value);
+  const survivorSelector = new TruncateSurvivorSelector();
   const terminator = new TerminatorImp(1000000, Infinity);
-  ga = new GeneticAlgorithm(initializer, fitnessCalc, selector, reproducer, mutater, terminator);
+  ga = new GeneticAlgorithm(
+    initializer,
+    fitnessCalc,
+    parentSelector,
+    reproducer,
+    mutater,
+    survivorSelector,
+    terminator
+  );
 }
 
 function run() {
@@ -153,7 +163,7 @@ function onSim(log: readonly LanderData[]) {
   if (lastEntry.hasLanded) {
     trajectory.lineStyle(5, colorNumber('green'));
     landed = true;
-  };
+  }
 
   for (let entry of log) {
     trajectory.moveTo(entry.lastMovement.pointA.x, entry.lastMovement.pointA.y);

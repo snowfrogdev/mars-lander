@@ -1,6 +1,6 @@
 import { now } from '../shared/utils';
 import { Genome } from './Genome';
-import { Initializer, FitnessCalculator, Selector, Reproducer, Mutater, Terminator } from './abstractions/abstractions';
+import { Initializer, FitnessCalculator, ParentSelector, Reproducer, Mutater, Terminator, SurvivorSelector } from './abstractions/abstractions';
 
 export class GeneticAlgorithm {
   private _population: Genome[];
@@ -20,9 +20,10 @@ export class GeneticAlgorithm {
   constructor(
     private _initializer: Initializer,
     private _fitnessCalculator: FitnessCalculator,
-    private _selector: Selector,
+    private _parentSelector: ParentSelector,
     private _reproducer: Reproducer,
     private _mutater: Mutater,
+    private _survivorSelector: SurvivorSelector,
     private _terminator: Terminator
   ) { 
     this._population = this._initializer.run();
@@ -49,15 +50,15 @@ export class GeneticAlgorithm {
       return;
     };
 
-    const selected = this._selector.run(this._population);
+    const selected = this._parentSelector.run(this._population);
 
     const children = this._reproducer.run(selected);
 
     this._mutater.run(children);
 
-    children[children.length - 1] = this._fittestGenome();
+    const newPopulation = this._survivorSelector.run(this._population, children)
 
-    this._population = children;
+    this._population = newPopulation;
   }
 
   private _fittestGenome(): Genome {
