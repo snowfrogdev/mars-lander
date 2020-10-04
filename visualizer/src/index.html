@@ -12,10 +12,13 @@
       <input type="number" name="population-size" id="population-size" min="10" max="1000" step="10" value="150" />
 
       <label for="truncate-selection">Select top:</label>
-      <input type="number" name="truncate-selection" id="truncate-selection" min="0" max="1000" step="2" value="0" />
+      <input type="number" name="truncate-selection" id="truncate-selection" min="0" max="1000" step="2" value="100" />
+
+      <label for="crossover-point">Crossover point:</label>
+      <input type="number" name="crossover-point" id="crossover-point" min="0" max="1" step="0.1" value="0.5" />
 
       <label for="mutation-rate">Mutation rate:</label>
-      <input type="number" name="mutation-rate" id="mutation-rate" min="0" step="1" value="0.01" />
+      <input type="number" name="mutation-rate" id="mutation-rate" min="0" max="1"step="0.01" value="0.01" />
     </div>
 
     <div class="button-row">
@@ -48,6 +51,7 @@
       <button id="stop">Stop</button>
       <button id="step">Step</button>
       <button id="reset">Reset</button>
+      <button id="randomize">Randomize</button>
     </div>
   </body>
 </html>

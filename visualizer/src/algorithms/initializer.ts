@@ -10,7 +10,7 @@ export class RandomInitializer implements Initializer {
   }
 
   private _getInitialGenes(): number[] {
-    const params: number[] = new Array(this._scenario.fuel / 5);
+    const params: number[] = new Array(Math.round(this._scenario.fuel / 4));
     let minRotation: number;
     let maxRotation: number;
     let minThrust: number;

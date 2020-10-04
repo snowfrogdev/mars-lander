@@ -28,13 +28,22 @@ export function clamp(num: number, min: number, max: number) {
 }
 
 /**
- * A function that return a random whole number between
+ * A function that returns a random whole number between
  * `min` and `max`.
  */
 export function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min; // The maximum is inclusive and the minimum is inclusive
+}
+
+/**
+ * A function that returns a random number between the specified values. 
+ * The returned value is no lower than (and may possibly equal) min, 
+ * and is less than (and not equal) max.
+ */
+export function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
 }
 
 /**

@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import { GeneticAlgorithm } from '../../src/genetic-algorithm/genetic-algorithm';
+import { getRandomArbitrary, getRandomIntInclusive, spliceRandom } from '../../src/shared/utils';
 import { LanderData } from '../../src/simulation/lander-data';
 import { Scenario } from '../../src/simulation/scenario';
 import { FitnessBiases, FitnessCalculatorImp } from './algorithms/fitness-calculator';
@@ -7,7 +8,7 @@ import { RandomInitializer } from './algorithms/initializer';
 import { MutaterImp } from './algorithms/mutater';
 import { TruncateParentSelector } from './algorithms/parent-selector';
 import { OnePointReproducer } from './algorithms/reproducer';
-import { AgedBasedSurvivorSelector, TruncateSurvivorSelector } from './algorithms/survivor-selector';
+import { TruncateSurvivorSelector } from './algorithms/survivor-selector';
 import { TerminatorImp } from './algorithms/terminator';
 import { scenarios } from './data/scenarios';
 import { colorNumber } from './third-party-wrappers/colorNumber';
@@ -27,6 +28,8 @@ const populationSize = <HTMLInputElement>document.getElementById('population-siz
 populationSize.addEventListener('change', loadScenario);
 const truncateSelection = <HTMLInputElement>document.getElementById('truncate-selection');
 truncateSelection.addEventListener('change', loadScenario);
+const crossoverPoint = <HTMLInputElement>document.getElementById('crossover-point');
+crossoverPoint.addEventListener('change', loadScenario);
 const mutationRate = <HTMLInputElement>document.getElementById('mutation-rate');
 mutationRate.addEventListener('change', loadScenario);
 
@@ -59,6 +62,8 @@ const stepButton = <HTMLButtonElement>document.getElementById('step');
 stepButton.addEventListener('click', getNextGeneration);
 const resetButton = <HTMLButtonElement>document.getElementById('reset');
 resetButton.addEventListener('click', reset);
+const randomizeButton = <HTMLButtonElement>document.getElementById('randomize');
+randomizeButton.addEventListener('click', randomize);
 
 let scenario: Scenario = scenarios[parseInt(scenarioSelect.value)];
 let landscape = new PIXI.Graphics();
@@ -102,7 +107,7 @@ function loadScenario() {
   );
   const fitnessCalc = new FitnessCalculatorImp(scenario, biases, onSim);
   const parentSelector = new TruncateParentSelector(+truncateSelection.value);
-  const reproducer = new OnePointReproducer(0.5);
+  const reproducer = new OnePointReproducer(+crossoverPoint.value);
   const mutater = new MutaterImp(+mutationRate.value);
   const survivorSelector = new TruncateSurvivorSelector();
   const terminator = new TerminatorImp(1000000, Infinity);
@@ -145,6 +150,34 @@ function reset() {
   simulations = 0;
   landed = false;
   loadScenario();
+}
+
+function randomize() {
+  populationSize.value = getRandomIntInclusive(10, 1000).toString();
+  truncateSelection.value = getRandomIntInclusive(0, +populationSize.value).toString();
+  crossoverPoint.value = Math.random().toFixed(1);
+  mutationRate.value = Math.random().toFixed(2);
+
+  const biases = [hSpeedBias, vSpeedBias, angleBias, fuelBias, distanceBias, landedBias];
+
+  let remainingBias = 1;
+  while (biases.length) {
+    const bias = spliceRandom(biases);
+
+    if (!biases.length) {
+      bias.value = remainingBias.toFixed(2);
+      break;
+    }
+
+    const biasValue = getRandomArbitrary(0, remainingBias);
+    bias.value = biasValue.toFixed(2);
+    remainingBias -= +bias.value;
+  }
+
+
+
+  
+  reset();
 }
 
 function resetCanvas() {
