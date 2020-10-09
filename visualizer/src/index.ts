@@ -110,7 +110,7 @@ function loadScenario() {
   const reproducer = new OnePointReproducer(+crossoverPoint.value);
   const mutater = new MutaterImp(+mutationRate.value);
   const survivorSelector = new TruncateSurvivorSelector();
-  const terminator = new TerminatorImp(1000000, Infinity);
+  const terminator = new TerminatorImp(Infinity, 1250);
   ga = new GeneticAlgorithm(
     initializer,
     fitnessCalc,
@@ -131,6 +131,7 @@ function stop() {
 }
 
 function getNextGeneration() {
+  if (landed) stop();
   resetCanvas();
   ga.step();
   updateStats(ga);
@@ -172,11 +173,7 @@ function randomize() {
     const biasValue = getRandomArbitrary(0, remainingBias);
     bias.value = biasValue.toFixed(2);
     remainingBias -= +bias.value;
-  }
-
-
-
-  
+  }  
   reset();
 }
 

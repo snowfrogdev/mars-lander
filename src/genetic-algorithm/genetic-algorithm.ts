@@ -1,6 +1,14 @@
 import { now } from '../shared/utils';
+import {
+  FitnessCalculator,
+  Initializer,
+  Mutater,
+  ParentSelector,
+  Reproducer,
+  SurvivorSelector,
+  Terminator,
+} from './abstractions/abstractions';
 import { Genome } from './Genome';
-import { Initializer, FitnessCalculator, ParentSelector, Reproducer, Mutater, Terminator, SurvivorSelector } from './abstractions/abstractions';
 
 export class GeneticAlgorithm {
   private _population: Genome[];
@@ -16,7 +24,11 @@ export class GeneticAlgorithm {
   get averageScore() {
     return this._averageScore;
   }
-  
+  private _isCompleted = false;
+  get isCompleted() {
+    return this._isCompleted;
+  }
+
   constructor(
     private _initializer: Initializer,
     private _fitnessCalculator: FitnessCalculator,
@@ -25,14 +37,14 @@ export class GeneticAlgorithm {
     private _mutater: Mutater,
     private _survivorSelector: SurvivorSelector,
     private _terminator: Terminator
-  ) { 
+  ) {
     this._population = this._initializer.run();
   }
-  
+
   run(): Genome {
-    const start = now();        
-    
-    while (!this._terminator.shouldTerminate(this._generations, performance.now() - start, this._population)) {
+    const start = now();
+
+    while (!this._terminator.shouldTerminate(this._generations, now() - start, this._population)) {
       this.step();
     }
 
@@ -41,16 +53,17 @@ export class GeneticAlgorithm {
 
   step(startTime: number = Infinity) {
     this._generations++;
-    this._population.forEach(genome => genome.incrementAge());
-    
+    this._population.forEach((genome) => genome.incrementAge());
+
     this._fitnessCalculator.run(this._population);
 
     this._setBestScore();
     this._setAverageScore();
 
-    if (this._terminator.shouldTerminate(this._generations, performance.now() - startTime, this._population)) {
+    if (this._terminator.shouldTerminate(this._generations, now() - startTime, this._population)) {
+      this._isCompleted = true;
       return;
-    };
+    }
 
     const selected = this._parentSelector.run(this._population);
 
@@ -58,7 +71,7 @@ export class GeneticAlgorithm {
 
     this._mutater.run(children);
 
-    const newPopulation = this._survivorSelector.run(this._population, children)
+    const newPopulation = this._survivorSelector.run(this._population, children);
 
     this._population = newPopulation;
   }
