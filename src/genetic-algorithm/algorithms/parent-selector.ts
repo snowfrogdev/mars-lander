@@ -1,5 +1,5 @@
-import { ParentSelector } from "../../../src/genetic-algorithm/abstractions/abstractions";
-import { Genome } from "../../../src/genetic-algorithm/Genome";
+import { ParentSelector } from "../abstractions/abstractions";
+import { Genome } from "../Genome";
 
 export class TruncateParentSelector implements ParentSelector {
   constructor(private _cutoff: number) {}

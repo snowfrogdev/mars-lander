@@ -1,5 +1,5 @@
-import { Reproducer } from "../../../src/genetic-algorithm/abstractions/abstractions";
-import { Genome } from "../../../src/genetic-algorithm/Genome";
+import { Reproducer } from "../abstractions/abstractions";
+import { Genome } from "../Genome";
 
 export class OnePointReproducer implements Reproducer {
   constructor(private _crossoverPoint: number) {}

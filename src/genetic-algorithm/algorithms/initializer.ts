@@ -1,7 +1,7 @@
-import { Initializer } from "../../../src/genetic-algorithm/abstractions/abstractions";
-import { Genome } from "../../../src/genetic-algorithm/Genome";
-import { clamp, getRandomIntInclusive } from "../../../src/shared/utils";
-import { Scenario } from "../../../src/simulation/scenario";
+import { Initializer } from "../abstractions/abstractions";
+import { Genome } from "../Genome";
+import { clamp, getRandomIntInclusive } from "../../shared/utils";
+import { Scenario } from "../../simulation/scenario";
 
 export class RandomInitializer implements Initializer {
   constructor(private _scenario: Scenario, private _populationSize: number) {}

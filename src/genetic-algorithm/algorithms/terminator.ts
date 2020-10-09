@@ -1,5 +1,5 @@
-import { Terminator } from "../../../src/genetic-algorithm/abstractions/abstractions";
-import { Genome } from "../../../src/genetic-algorithm/Genome";
+import { Terminator } from "../abstractions/abstractions";
+import { Genome } from "../Genome";
 
 export class TerminatorImp implements Terminator  {
   constructor(private maxSimulations: number, private maxEllapsedTime: number) {}

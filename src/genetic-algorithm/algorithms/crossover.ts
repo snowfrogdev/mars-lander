@@ -1,4 +1,4 @@
-import { Genome } from "./Genome";
+import { Genome } from "../Genome";
 
 function onePointCrossover(parent1: Genome, parent2: Genome, point = 0.5): Genome[] {
   const index = Math.round(parent1.genes.length - 1) * point;

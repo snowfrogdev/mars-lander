@@ -1,5 +1,5 @@
-import { SurvivorSelector } from '../../../src/genetic-algorithm/abstractions/abstractions';
-import { Genome } from '../../../src/genetic-algorithm/Genome';
+import { SurvivorSelector } from '../abstractions/abstractions';
+import { Genome } from '../Genome';
 
 export class TruncateSurvivorSelector implements SurvivorSelector {
   run(population: Genome[], children: Genome[]): Genome[] {

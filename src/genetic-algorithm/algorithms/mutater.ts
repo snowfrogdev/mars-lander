@@ -1,6 +1,6 @@
-import { Mutater } from "../../../src/genetic-algorithm/abstractions/abstractions";
-import { Genome } from '../../../src/genetic-algorithm/Genome';
-import { clamp, getRandomIntInclusive } from '../../../src/shared/utils';
+import { Mutater } from "../abstractions/abstractions";
+import { Genome } from '../Genome';
+import { clamp, getRandomIntInclusive } from '../../shared/utils';
 
 export class MutaterImp implements Mutater {
   constructor(private _mutationRate = 0.01) {}

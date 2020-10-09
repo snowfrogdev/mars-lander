@@ -1,4 +1,4 @@
-import { Genome } from "./Genome";
+import { Genome } from "../Genome";
 
 export function rouletteWheelSelection(population: ReadonlyArray<Genome>): ReadonlyArray<Genome> {
   const totalFitness = population.reduce((p, c) => p + c.fitness, 0);
